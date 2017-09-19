@@ -885,6 +885,32 @@ int b3CreateCollisionShapeAddMesh(b3SharedMemoryCommandHandle commandHandle,cons
 	return -1;
 }
 
+int b3CreateCollisionShapeAddTriMesh(b3SharedMemoryCommandHandle commandHandle, int numVertices, double* meshData, double meshScale[3])
+{
+  struct SharedMemoryCommand* command = (struct SharedMemoryCommand*) commandHandle;
+  b3Assert(command);
+  b3Assert(command->m_type == CMD_CREATE_COLLISION_SHAPE);
+  if (command->m_type==CMD_CREATE_COLLISION_SHAPE)
+    {
+      int shapeIndex = command->m_createCollisionShapeArgs.m_numCollisionShapes;
+      if (shapeIndex <MAX_COMPOUND_COLLISION_SHAPES)
+        {
+          command->m_createCollisionShapeArgs.m_shapes[shapeIndex].m_type = GEOM_TRIMESH;
+          command->m_createCollisionShapeArgs.m_shapes[shapeIndex].m_collisionFlags = 0;
+          command->m_createCollisionShapeArgs.m_shapes[shapeIndex].m_hasChildTransform = 0;
+          command->m_createCollisionShapeArgs.m_shapes[shapeIndex].m_meshData = meshData;
+          command->m_createCollisionShapeArgs.m_shapes[shapeIndex].m_numVertices = numVertices;
+          command->m_createCollisionShapeArgs.m_shapes[shapeIndex].m_meshScale[0] = meshScale[0];
+          command->m_createCollisionShapeArgs.m_shapes[shapeIndex].m_meshScale[1] = meshScale[1];
+          command->m_createCollisionShapeArgs.m_shapes[shapeIndex].m_meshScale[2] = meshScale[2];
+          command->m_createCollisionShapeArgs.m_shapes[shapeIndex].m_meshFileType = 0;
+          command->m_createCollisionShapeArgs.m_numCollisionShapes++;
+          return shapeIndex;
+        }
+    }
+  return -1;
+}
+
 void b3CreateCollisionSetFlag(b3SharedMemoryCommandHandle commandHandle,int shapeIndex, int flags)
 {
 	

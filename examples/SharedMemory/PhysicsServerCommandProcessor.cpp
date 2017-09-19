@@ -4131,6 +4131,7 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
 							}
 							case GEOM_MESH:
 							{
+                                                          
 								btScalar defaultCollisionMargin = 0.001;
 
 								btVector3 meshScale(clientCmd.m_createCollisionShapeArgs.m_shapes[i].m_meshScale[0],
@@ -4265,6 +4266,114 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
 								}
 								break;
 							}
+							case GEOM_TRIMESH:
+							{
+								btScalar defaultCollisionMargin = 0.001;
+
+								btVector3 meshScale(clientCmd.m_createCollisionShapeArgs.m_shapes[i].m_meshScale[0],
+									clientCmd.m_createCollisionShapeArgs.m_shapes[i].m_meshScale[1],
+									clientCmd.m_createCollisionShapeArgs.m_shapes[i].m_meshScale[2]);
+
+
+                                                                urdfColObj.m_sourceFileLocation = "memory";
+                                                                urdfColObj.m_name = "memory";
+                                                                urdfColObj.m_geometry.m_type = URDF_GEOM_MESH;
+								urdfColObj.m_geometry.m_meshScale = meshScale;
+								char relativeFileName[1024];
+								char pathPrefix[1024];
+								pathPrefix[0] = 0;
+
+								{
+                                                                  //urdfColObj.m_geometry.m_meshFileType = out_type;
+
+									{
+										//create a convex hull for each shape, and store it in a btCompoundShape
+
+										if (clientCmd.m_createCollisionShapeArgs.m_shapes[i].m_collisionFlags & GEOM_FORCE_CONCAVE_TRIMESH)
+										{
+											// GLInstanceGraphicsShape* glmesh = LoadMeshFromObj(relativeFileName, pathPrefix);
+											
+											// if (!glmesh || glmesh->m_numvertices<=0)
+											// {
+											// 	b3Warning("%s: cannot extract mesh from '%s'\n", pathPrefix, relativeFileName);
+											// 	delete glmesh;
+											// 	break;
+											// }
+											// btAlignedObjectArray<btVector3> convertedVerts;
+											// convertedVerts.reserve(glmesh->m_numvertices);
+											
+											// for (int i=0; i<glmesh->m_numvertices; i++)
+											// {
+											// 	convertedVerts.push_back(btVector3(
+											// 		glmesh->m_vertices->at(i).xyzw[0]*meshScale[0],
+											// 		glmesh->m_vertices->at(i).xyzw[1]*meshScale[1],
+											// 		glmesh->m_vertices->at(i).xyzw[2]*meshScale[2]));
+											// }
+
+											// BT_PROFILE("convert trimesh");
+											// btTriangleMesh* meshInterface = new btTriangleMesh();
+											// this->m_data->m_meshInterfaces.push_back(meshInterface);
+											// {
+											// 	BT_PROFILE("convert vertices");
+
+											// 	for (int i=0; i<glmesh->m_numIndices/3; i++)
+											// 	{
+											// 		const btVector3& v0 = convertedVerts[glmesh->m_indices->at(i*3)];
+											// 		const btVector3& v1 = convertedVerts[glmesh->m_indices->at(i*3+1)];
+											// 		const btVector3& v2 = convertedVerts[glmesh->m_indices->at(i*3+2)];
+											// 		meshInterface->addTriangle(v0,v1,v2);
+											// 	}
+											// }
+											// {
+											// 	BT_PROFILE("create btBvhTriangleMeshShape");
+											// 	btBvhTriangleMeshShape* trimesh = new btBvhTriangleMeshShape(meshInterface,true,true);
+											// 	m_data->m_collisionShapes.push_back(trimesh);
+											// 	//trimesh->setLocalScaling(collision->m_geometry.m_meshScale);
+											// 	shape = trimesh;
+											// 	if (compound)
+											// 	{
+											// 		compound->addChildShape(childTransform,shape);
+											// 	}
+											// }
+											// delete glmesh;
+										} else
+										{
+
+											//shape = createConvexHullFromShapes(shapes, collision->m_geometry.m_meshScale);
+											//static btCollisionShape* createConvexHullFromShapes(std::vector<tinyobj::shape_t>& shapes, const btVector3& geomScale)
+											B3_PROFILE("createConvexHullFromShapes");
+											if (compound==0)
+											{
+												compound = worldImporter->createCompoundShape();
+											}
+											compound->setMargin(defaultCollisionMargin);
+
+											{
+												btConvexHullShape* convexHull = worldImporter->createConvexHullShape();
+												convexHull->setMargin(defaultCollisionMargin);
+												int faceCount = clientCmd.m_createCollisionShapeArgs.m_shapes[i].m_numVertices;
+
+												for (int f = 0; f<faceCount; f += 1)
+												{
+													btVector3 pt;
+													pt.setValue(
+                                                                                                                    clientCmd.m_createCollisionShapeArgs.m_shapes[i].m_meshData[f * 3],
+                                                                                                                    clientCmd.m_createCollisionShapeArgs.m_shapes[i].m_meshData[f * 3 + 1],
+                                                                                                                    clientCmd.m_createCollisionShapeArgs.m_shapes[i].m_meshData[f * 3 + 2]);
+
+													convexHull->addPoint(pt*meshScale,false);
+												}
+
+												convexHull->recalcLocalAabb();
+												convexHull->optimizeConvexHull();
+												compound->addChildShape(childTransform,convexHull);
+											}
+										}
+									}
+								}
+								break;
+							}
+
 							default:
 							{
 							}

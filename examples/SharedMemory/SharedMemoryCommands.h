@@ -837,7 +837,10 @@ struct b3CreateCollisionShape
 
 	int         m_meshFileType;
 	char		m_meshFileName[VISUAL_SHAPE_MAX_PATH_LEN];
+  	int		m_numVertices;
+	double*		m_meshData;
 	double		m_meshScale[3];
+  
 	int			m_collisionFlags;
 
 };

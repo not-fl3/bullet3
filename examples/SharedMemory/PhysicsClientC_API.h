@@ -350,6 +350,7 @@ int b3CreateCollisionShapeAddCapsule(b3SharedMemoryCommandHandle commandHandle,d
 int b3CreateCollisionShapeAddCylinder(b3SharedMemoryCommandHandle commandHandle,double radius, double height);
 int b3CreateCollisionShapeAddPlane(b3SharedMemoryCommandHandle commandHandle, double planeNormal[3], double planeConstant);
 int b3CreateCollisionShapeAddMesh(b3SharedMemoryCommandHandle commandHandle,const char* fileName, double meshScale[3]);
+int b3CreateCollisionShapeAddTriMesh(b3SharedMemoryCommandHandle commandHandle, int numVertices, double* meshData, double meshScale[3]);
 void b3CreateCollisionSetFlag(b3SharedMemoryCommandHandle commandHandle,int shapeIndex, int flags);
 
 void b3CreateCollisionShapeSetChildTransform(b3SharedMemoryCommandHandle commandHandle,int shapeIndex, double childPosition[3], double childOrientation[4]);

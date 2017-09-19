@@ -601,7 +601,8 @@ enum eUrdfGeomTypes //sync with UrdfParser UrdfGeomTypes
 	GEOM_MESH,
 	GEOM_PLANE,
 	GEOM_CAPSULE, //non-standard URDF?
-	GEOM_UNKNOWN, 
+	GEOM_UNKNOWN,
+        GEOM_TRIMESH,
 };
 
 enum eUrdfCollisionFlags

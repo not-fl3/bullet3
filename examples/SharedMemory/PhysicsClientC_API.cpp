@@ -1975,6 +1975,24 @@ int b3InitChangeUserConstraintSetFrameInB(b3SharedMemoryCommandHandle commandHan
 	return 0;
 }
 
+b3SharedMemoryCommandHandle b3InitSetAngularFactorCommand(b3PhysicsClientHandle physClient, int bodyUniqueId, const double factor[])
+{
+    PhysicsClient* cl = (PhysicsClient* ) physClient;
+    b3Assert(cl);
+    b3Assert(cl->canSubmitCommand());
+    struct SharedMemoryCommand* command = cl->getAvailableSharedMemoryCommand();
+    b3Assert(command);
+
+    command->m_type = CMD_SET_ANGULAR_FACTOR;
+    command->m_updateFlags = 0;
+
+    command->m_setAngularFactorArguments.m_factor[0] = factor[0];
+    command->m_setAngularFactorArguments.m_factor[1] = factor[1];
+    command->m_setAngularFactorArguments.m_factor[2] = factor[2];
+
+    return (b3SharedMemoryCommandHandle) command;
+}
+
 int b3InitChangeUserConstraintSetMaxForce(b3SharedMemoryCommandHandle commandHandle, double maxAppliedForce)
 {
 	struct SharedMemoryCommand* command = (struct SharedMemoryCommand*) commandHandle;

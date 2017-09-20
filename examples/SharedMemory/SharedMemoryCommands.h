@@ -578,6 +578,12 @@ struct ExternalForceArgs
     int m_forceFlags[MAX_SDF_BODIES];
 };
 
+struct SetAngularFactorArgs
+{
+    int m_bodyUniqueId;
+    double m_factor[3];
+};
+
 enum EnumSdfRequestInfoFlags
 {
     SDF_REQUEST_INFO_BODY=1,
@@ -971,6 +977,7 @@ struct SharedMemoryCommand
 		struct b3RequestCollisionInfoArgs m_requestCollisionInfoArgs;
 		struct b3ChangeTextureArgs m_changeTextureArgs;
 		struct b3SearchPathfArgs m_searchPathArgs;
+         struct SetAngularFactorArgs m_setAngularFactorArguments;
     };
 };
 

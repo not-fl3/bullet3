@@ -446,6 +446,9 @@ b3SharedMemoryCommandHandle b3ApplyExternalForceCommandInit(b3PhysicsClientHandl
 void b3ApplyExternalForce(b3SharedMemoryCommandHandle commandHandle, int bodyUniqueId, int linkId, const double force[3], const double position[3], int flags);
 void b3ApplyExternalTorque(b3SharedMemoryCommandHandle commandHandle, int bodyUniqueId, int linkId, const double torque[3], int flags);
 
+/// Set angular force multiplier
+b3SharedMemoryCommandHandle b3InitSetAngularFactorCommand(b3PhysicsClientHandle physClient, int bodyUniqueId, const double factor[]);
+
 ///experiments of robots interacting with non-rigid objects (such as btSoftBody)
 b3SharedMemoryCommandHandle	b3LoadBunnyCommandInit(b3PhysicsClientHandle physClient);
 int b3LoadBunnySetScale(b3SharedMemoryCommandHandle commandHandle, double scale);

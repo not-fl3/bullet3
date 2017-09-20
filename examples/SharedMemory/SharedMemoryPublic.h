@@ -72,6 +72,9 @@ enum EnumSharedMemoryClientCommand
 	CMD_REQUEST_MOUSE_EVENTS_DATA,
 	CMD_CHANGE_TEXTURE,
 	CMD_SET_ADDITIONAL_SEARCH_PATH,
+
+
+    CMD_SET_ANGULAR_FACTOR,
     //don't go beyond this command!
     CMD_MAX_CLIENT_COMMANDS,
     

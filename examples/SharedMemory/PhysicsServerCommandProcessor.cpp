@@ -6045,7 +6045,7 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
 				case CMD_CREATE_RIGID_BODY:
 				case CMD_CREATE_BOX_COLLISION_SHAPE:
 					{
-						BT_PROFILE("CMD_CREATE_RIGID_BODY");
+						BT_PROFILE("CMD_CREATE_BOX_COLLISION_SHAPE");
 
                         btVector3 halfExtents(1,1,1);
                         if (clientCmd.m_updateFlags & BOX_SHAPE_HAS_HALF_EXTENTS)
@@ -6878,6 +6878,34 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
                     hasStatus = true;
                     break;
                 }
+                case CMD_SET_ANGULAR_FACTOR:
+                  {
+                    BT_PROFILE("CMD_SET_ANGULAR_FACTOR");
+
+                    b3Printf("TRYING TO SET ANGULAR FACTOR %i!!!!!!", clientCmd.m_setAngularFactorArguments.m_bodyUniqueId);
+                    InternalBodyHandle* bodyHandle = m_data->m_bodyHandles.getHandle(clientCmd.m_setAngularFactorArguments.m_bodyUniqueId);
+                    if (bodyHandle && bodyHandle->m_rigidBody)
+                      {
+                        b3Printf("BODY!!!!!!");
+
+                        btRigidBody* mb = bodyHandle->m_rigidBody;
+
+                        btVector3 factor(clientCmd.m_setAngularFactorArguments.m_factor[0],
+                                         clientCmd.m_setAngularFactorArguments.m_factor[1],
+                                         clientCmd.m_setAngularFactorArguments.m_factor[2]);
+                        mb->setAngularFactor(factor);
+                      }
+                    else
+                      {
+                        b3Printf("NOT A RIGID BODY!!!!");
+                      }
+
+                    SharedMemoryStatus& serverCmd =serverStatusOut;
+                    serverCmd.m_type = CMD_CLIENT_COMMAND_COMPLETED;
+                    hasStatus = true;
+                    break;
+                  }
+
 				case CMD_REMOVE_BODY:
 				{
 					SharedMemoryStatus& serverCmd =serverStatusOut;

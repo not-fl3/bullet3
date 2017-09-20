@@ -449,6 +449,9 @@ void b3ApplyExternalTorque(b3SharedMemoryCommandHandle commandHandle, int bodyUn
 /// Set angular force multiplier
 b3SharedMemoryCommandHandle b3InitSetAngularFactorCommand(b3PhysicsClientHandle physClient, int bodyUniqueId, const double factor[]);
 
+/// Set rigid body from shape
+b3SharedMemoryCommandHandle b3CreateRigidBodyCommandInit(b3PhysicsClientHandle physClient, int shapeUniqueId, int is_dynamic, double mass, const double position[], const double orientation[]);
+
 ///experiments of robots interacting with non-rigid objects (such as btSoftBody)
 b3SharedMemoryCommandHandle	b3LoadBunnyCommandInit(b3PhysicsClientHandle physClient);
 int b3LoadBunnySetScale(b3SharedMemoryCommandHandle commandHandle, double scale);

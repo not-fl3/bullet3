@@ -584,6 +584,7 @@ struct SetAngularFactorArgs
     double m_factor[3];
 };
 
+
 enum EnumSdfRequestInfoFlags
 {
     SDF_REQUEST_INFO_BODY=1,
@@ -924,6 +925,15 @@ struct b3ChangeTextureArgs
 	int m_height;
 };
 
+struct CreateRigidBodyArgs
+{
+	int m_collisionShapeUniqueId;
+	bool m_isDynamic;
+	double m_mass;
+	double m_position[3];
+	double m_orientation[4];
+};
+
 struct SharedMemoryCommand
 {
 	int m_type;
@@ -978,14 +988,14 @@ struct SharedMemoryCommand
 		struct b3ChangeTextureArgs m_changeTextureArgs;
 		struct b3SearchPathfArgs m_searchPathArgs;
          struct SetAngularFactorArgs m_setAngularFactorArguments;
+         struct CreateRigidBodyArgs m_createRigidBodyArguments;
     };
 };
 
 struct RigidBodyCreateArgs
 {
-	int m_bodyUniqueId; 
+	int m_bodyUniqueId;
 };
-
 struct SendContactDataArgs
 {
     int m_startingContactPointIndex;

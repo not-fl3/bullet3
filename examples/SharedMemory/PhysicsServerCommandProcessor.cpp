@@ -6043,6 +6043,44 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
                     break;
                 }
 				case CMD_CREATE_RIGID_BODY:
+                                  {
+						btBulletWorldImporter* worldImporter = new btBulletWorldImporter(m_data->m_dynamicsWorld);
+						m_data->m_worldImporters.push_back(worldImporter);
+
+                                                btCollisionShape *shape = m_data->m_userCollisionShapeHandles.getHandle(clientCmd.m_createRigidBodyArguments.m_collisionShapeUniqueId)->m_collisionShape;
+						btTransform startTrans;
+						startTrans.setIdentity();
+                                                startTrans.setOrigin(btVector3(
+                                                                               clientCmd.m_createRigidBodyArguments.m_position[0],
+                                                                               clientCmd.m_createRigidBodyArguments.m_position[1],
+                                                                               clientCmd.m_createRigidBodyArguments.m_position[2]));
+                                                startTrans.setRotation(btQuaternion(clientCmd.m_createRigidBodyArguments.m_orientation[0],
+                                                                                    clientCmd.m_createRigidBodyArguments.m_orientation[1],
+                                                                                    clientCmd.m_createRigidBodyArguments.m_orientation[2],
+                                                                                    clientCmd.m_createRigidBodyArguments.m_orientation[3]));
+
+						btRigidBody* rb = worldImporter->createRigidBody(clientCmd.m_createRigidBodyArguments.m_isDynamic,
+                                                                                                 clientCmd.m_createRigidBodyArguments.m_isDynamic,
+                                                                                                 startTrans,
+                                                                                                 shape,
+                                                                                                 0);
+
+                                                btVector4 colorRGBA(1,1,0,1);
+                                                m_data->m_guiHelper->createCollisionShapeGraphicsObject(rb->getCollisionShape());
+						m_data->m_guiHelper->createCollisionObjectGraphicsObject(rb,colorRGBA);
+
+                                                SharedMemoryStatus& serverCmd =serverStatusOut;
+						serverCmd.m_type = CMD_RIGID_BODY_CREATION_COMPLETED;
+
+						int bodyUniqueId = m_data->m_bodyHandles.allocHandle();
+						InternalBodyHandle* bodyHandle = m_data->m_bodyHandles.getHandle(bodyUniqueId);
+						serverCmd.m_rigidBodyCreateArgs.m_bodyUniqueId = bodyUniqueId;
+						rb->setUserIndex2(bodyUniqueId);
+						bodyHandle->m_rootLocalInertialFrame.setIdentity();
+						bodyHandle->m_rigidBody = rb;
+                                                hasStatus = true;
+                                                break;
+                                  }
 				case CMD_CREATE_BOX_COLLISION_SHAPE:
 					{
 						BT_PROFILE("CMD_CREATE_BOX_COLLISION_SHAPE");
@@ -6882,11 +6920,9 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
                   {
                     BT_PROFILE("CMD_SET_ANGULAR_FACTOR");
 
-                    b3Printf("TRYING TO SET ANGULAR FACTOR %i!!!!!!", clientCmd.m_setAngularFactorArguments.m_bodyUniqueId);
                     InternalBodyHandle* bodyHandle = m_data->m_bodyHandles.getHandle(clientCmd.m_setAngularFactorArguments.m_bodyUniqueId);
                     if (bodyHandle && bodyHandle->m_rigidBody)
                       {
-                        b3Printf("BODY!!!!!!");
 
                         btRigidBody* mb = bodyHandle->m_rigidBody;
 
@@ -6894,10 +6930,6 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
                                          clientCmd.m_setAngularFactorArguments.m_factor[1],
                                          clientCmd.m_setAngularFactorArguments.m_factor[2]);
                         mb->setAngularFactor(factor);
-                      }
-                    else
-                      {
-                        b3Printf("NOT A RIGID BODY!!!!");
                       }
 
                     SharedMemoryStatus& serverCmd =serverStatusOut;

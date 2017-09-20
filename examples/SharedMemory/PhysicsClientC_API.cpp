@@ -1986,9 +1986,35 @@ b3SharedMemoryCommandHandle b3InitSetAngularFactorCommand(b3PhysicsClientHandle 
     command->m_type = CMD_SET_ANGULAR_FACTOR;
     command->m_updateFlags = 0;
 
+    command->m_setAngularFactorArguments.m_bodyUniqueId = bodyUniqueId;
     command->m_setAngularFactorArguments.m_factor[0] = factor[0];
     command->m_setAngularFactorArguments.m_factor[1] = factor[1];
     command->m_setAngularFactorArguments.m_factor[2] = factor[2];
+
+    return (b3SharedMemoryCommandHandle) command;
+}
+
+b3SharedMemoryCommandHandle b3CreateRigidBodyCommandInit(b3PhysicsClientHandle physClient, int shapeUniqueId, int is_dynamic, double mass, const double position[], const double orientation[])
+{
+    PhysicsClient* cl = (PhysicsClient* ) physClient;
+    b3Assert(cl);
+    b3Assert(cl->canSubmitCommand());
+    struct SharedMemoryCommand* command = cl->getAvailableSharedMemoryCommand();
+    b3Assert(command);
+
+    command->m_type = CMD_CREATE_RIGID_BODY;
+
+    command->m_createRigidBodyArguments.m_collisionShapeUniqueId = shapeUniqueId;
+    command->m_createRigidBodyArguments.m_isDynamic = is_dynamic != 0;
+    command->m_createRigidBodyArguments.m_mass = mass;
+    command->m_createRigidBodyArguments.m_position[0] = position[0];
+    command->m_createRigidBodyArguments.m_position[1] = position[1];
+    command->m_createRigidBodyArguments.m_position[2] = position[2];
+
+    command->m_createRigidBodyArguments.m_orientation[0] = orientation[0];
+    command->m_createRigidBodyArguments.m_orientation[1] = orientation[1];
+    command->m_createRigidBodyArguments.m_orientation[2] = orientation[2];
+    command->m_createRigidBodyArguments.m_orientation[2] = orientation[3];
 
     return (b3SharedMemoryCommandHandle) command;
 }

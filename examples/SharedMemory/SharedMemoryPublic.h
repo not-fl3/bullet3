@@ -75,6 +75,7 @@ enum EnumSharedMemoryClientCommand
 
 
     CMD_SET_ANGULAR_FACTOR,
+    CMD_APPLY_CENTRAL_IMPULSE,
     //don't go beyond this command!
     CMD_MAX_CLIENT_COMMANDS,
     

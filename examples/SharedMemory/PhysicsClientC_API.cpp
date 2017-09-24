@@ -1994,6 +1994,25 @@ b3SharedMemoryCommandHandle b3InitSetAngularFactorCommand(b3PhysicsClientHandle 
     return (b3SharedMemoryCommandHandle) command;
 }
 
+b3SharedMemoryCommandHandle b3InitApplyCentralImpulseCommand(b3PhysicsClientHandle physClient, int bodyUniqueId, const double impulse[])
+{
+    PhysicsClient* cl = (PhysicsClient* ) physClient;
+    b3Assert(cl);
+    b3Assert(cl->canSubmitCommand());
+    struct SharedMemoryCommand* command = cl->getAvailableSharedMemoryCommand();
+    b3Assert(command);
+
+    command->m_type = CMD_APPLY_CENTRAL_IMPULSE;
+    command->m_updateFlags = 0;
+
+    command->m_applyCentralImpulseArguments.m_bodyUniqueId = bodyUniqueId;
+    command->m_applyCentralImpulseArguments.m_impulse[0] = impulse[0];
+    command->m_applyCentralImpulseArguments.m_impulse[1] = impulse[1];
+    command->m_applyCentralImpulseArguments.m_impulse[2] = impulse[2];
+
+    return (b3SharedMemoryCommandHandle) command;
+}
+
 b3SharedMemoryCommandHandle b3CreateRigidBodyCommandInit(b3PhysicsClientHandle physClient, int shapeUniqueId, int is_dynamic, double mass, const double position[], const double orientation[])
 {
     PhysicsClient* cl = (PhysicsClient* ) physClient;

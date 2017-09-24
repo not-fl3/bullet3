@@ -584,6 +584,12 @@ struct SetAngularFactorArgs
     double m_factor[3];
 };
 
+struct ApplyCentralImpulseArgs
+{
+    int m_bodyUniqueId;
+    double m_impulse[3];
+};
+
 
 enum EnumSdfRequestInfoFlags
 {
@@ -989,6 +995,7 @@ struct SharedMemoryCommand
 		struct b3SearchPathfArgs m_searchPathArgs;
          struct SetAngularFactorArgs m_setAngularFactorArguments;
          struct CreateRigidBodyArgs m_createRigidBodyArguments;
+         struct ApplyCentralImpulseArgs m_applyCentralImpulseArguments;
     };
 };
 

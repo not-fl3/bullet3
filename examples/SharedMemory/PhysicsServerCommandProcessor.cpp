@@ -6937,6 +6937,28 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
                     hasStatus = true;
                     break;
                   }
+                  case CMD_APPLY_CENTRAL_IMPULSE:
+                    {
+                      BT_PROFILE("CMD_APPLY_CENTRAL_IMPULSE");
+
+                      InternalBodyHandle* bodyHandle = m_data->m_bodyHandles.getHandle(clientCmd.m_setAngularFactorArguments.m_bodyUniqueId);
+                      if (bodyHandle && bodyHandle->m_rigidBody)
+                        {
+
+                          btRigidBody* mb = bodyHandle->m_rigidBody;
+
+                          btVector3 impulse(clientCmd.m_applyCentralImpulseArguments.m_impulse[0],
+                                           clientCmd.m_applyCentralImpulseArguments.m_impulse[1],
+                                           clientCmd.m_applyCentralImpulseArguments.m_impulse[2]);
+                          mb->applyCentralImpulse(impulse);
+                        }
+
+                      SharedMemoryStatus& serverCmd =serverStatusOut;
+                      serverCmd.m_type = CMD_CLIENT_COMMAND_COMPLETED;
+                      hasStatus = true;
+                      break;
+                    }
+
 
 				case CMD_REMOVE_BODY:
 				{

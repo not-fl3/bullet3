@@ -449,6 +449,9 @@ void b3ApplyExternalTorque(b3SharedMemoryCommandHandle commandHandle, int bodyUn
 /// Set angular force multiplier
 b3SharedMemoryCommandHandle b3InitSetAngularFactorCommand(b3PhysicsClientHandle physClient, int bodyUniqueId, const double factor[]);
 
+/// Apply central impulse. Should work only with btRigidBodies
+b3SharedMemoryCommandHandle b3InitApplyCentralImpulseCommand(b3PhysicsClientHandle physClient, int bodyUniqueId, const double impulse[]);
+
 /// Set rigid body from shape
 b3SharedMemoryCommandHandle b3CreateRigidBodyCommandInit(b3PhysicsClientHandle physClient, int shapeUniqueId, int is_dynamic, double mass, const double position[], const double orientation[]);
 

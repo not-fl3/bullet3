@@ -864,7 +864,7 @@ void PhysicsDirect::postProcessStatus(const struct SharedMemoryStatus& serverCmd
 		if (serverCmd.m_numDataStreamBytes > 0)
 		{
 			int bodyIndex = serverCmd.m_dataStreamArguments.m_bodyUniqueId;
-			processBodyJointInfo(bodyIndex, serverCmd);
+			//processBodyJointInfo(bodyIndex, serverCmd);
 		}
 		break;
 	}

@@ -30,16 +30,20 @@ public:
         char* t1 = (char*)"--start_demo_name=Physics Server";
         newargv[argc] = t0;
         newargv[argc+1] = t1;
+#ifndef NO_VISUALISER
         m_data = btCreateInProcessExampleBrowserMainThread(newargc,newargv, useInProcessMemory);
         SharedMemoryInterface* shMem = btGetSharedMemoryInterfaceMainThread(m_data);
         
         setSharedMemoryInterface(shMem);
+#endif
     }
     
     virtual ~InProcessPhysicsClientSharedMemoryMainThread()
     {
         setSharedMemoryInterface(0);
+#ifndef NO_VISUALISER
         btShutDownExampleBrowserMainThread(m_data);
+#endif
     }
     
     // return non-null if there is a status, nullptr otherwise
@@ -47,10 +51,12 @@ public:
     {
 		
 		{
+#ifndef NO_VISUALISER
 			if (btIsExampleBrowserMainThreadTerminated(m_data))
 			{
 				PhysicsClientSharedMemory::disconnectSharedMemory();
 			}
+#endif
 		}
 			{	
 	   		unsigned long int ms = m_clock.getTimeMilliseconds();
@@ -58,7 +64,9 @@ public:
 			{ 
 				B3_PROFILE("m_clock.reset()");
 
+#ifndef NO_VISUALISER
 				btUpdateInProcessExampleBrowserMainThread(m_data);
+#endif
 				m_clock.reset(); 
 			}
 		}
@@ -119,15 +127,19 @@ public:
 		char* t1 = (char*)"--start_demo_name=Physics Server";
 		m_newargv[argc] = t0;
 		m_newargv[argc+1] = t1;
+#ifndef NO_VISUALISER
 		m_data = btCreateInProcessExampleBrowser(newargc,m_newargv, useInProcessMemory);
 		SharedMemoryInterface* shMem = btGetSharedMemoryInterface(m_data);
 		setSharedMemoryInterface(shMem);
+#endif
 	}
 
 	virtual ~InProcessPhysicsClientSharedMemory()
 	{
 		setSharedMemoryInterface(0);
+#ifndef NO_VISUALISER
 		btShutDownExampleBrowser(m_data);
+#endif
 		free(m_newargv);
 	}
 
@@ -164,18 +176,22 @@ public:
 		m_sharedMem = new InProcessMemory;
 		CommonExampleOptions options(guiHelper);
 		options.m_sharedMem = m_sharedMem;
-			
+
+#ifndef NO_VISUALISER
 		m_physicsServerExample = PhysicsServerCreateFuncBullet2(options);
 		m_physicsServerExample ->initPhysics();
 		m_physicsServerExample ->resetCamera();
 		setSharedMemoryInterface(m_sharedMem);
 		m_clock.reset();
 		m_prevTime = m_clock.getTimeMicroseconds();
+#endif
 
 	}
 	virtual ~InProcessPhysicsClientExistingExampleBrowser()
 	{
+#ifndef NO_VISUALISER
 		m_physicsServerExample->exitPhysics();
+#endif
 		//s_instancingRenderer->removeAllInstances();
 		delete m_physicsServerExample;
 		delete m_sharedMem;

@@ -14243,7 +14243,7 @@ GLboolean GLEWAPIENTRY glewOpenGL11Init(void)
 
     if (r==0)
     {
-        printf("glewOpenGL11Init dynamically loaded using dlopen/dlsym OK\n");
+      //printf("glewOpenGL11Init dynamically loaded using dlopen/dlsym OK\n");
     }
   return r;
 }

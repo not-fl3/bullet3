@@ -1510,7 +1510,10 @@ struct PhysicsServerCommandProcessorInternalData
 	btVector3 m_hitPos;
 	btScalar m_oldPickingDist;
 	bool m_prevCanSleep;
+#ifndef NO_VISUALISER
 	TinyRendererVisualShapeConverter  m_visualConverter;
+#endif
+
 #ifdef B3_ENABLE_TINY_AUDIO
 	b3SoundEngine m_soundEngine;
 #endif
@@ -2076,7 +2079,9 @@ struct ProgrammaticUrdfInterface : public URDFImporterInterface
 		//UrdfVisual vis;
 		//link.m_visualArray.push_back(vis);
 		//UrdfLink*const* linkPtr = model.m_links.getAtIndex(urdfIndex);
+#ifndef NO_VISUALISER
 		m_data->m_visualConverter.convertVisualShapes(linkIndex,pathPrefix,localInertiaFrame, &link, &model, colObj, bodyUniqueId);
+#endif
 	}
     virtual void setBodyUniqueId(int bodyId) 
 	{
@@ -2615,7 +2620,12 @@ bool PhysicsServerCommandProcessor::loadMjcf(const char* fileName, char* bufferS
 
 	m_data->m_sdfRecentLoadedBodies.clear();
 
-    BulletMJCFImporter u2b(m_data->m_guiHelper, &m_data->m_visualConverter);
+#ifndef NO_VISUALISER
+        BulletMJCFImporter u2b(m_data->m_guiHelper, &m_data->m_visualConverter);
+#else
+        BulletMJCFImporter u2b(m_data->m_guiHelper, NULL);
+#endif
+
 
 	bool useFixedBase = false;
 	MyMJCFLogger2 logger;
@@ -2638,11 +2648,15 @@ bool PhysicsServerCommandProcessor::loadSdf(const char* fileName, char* bufferSe
 
 	m_data->m_sdfRecentLoadedBodies.clear();
 
+#ifndef NO_VISUALISER
     BulletURDFImporter u2b(m_data->m_guiHelper, &m_data->m_visualConverter, globalScaling);
+#else
+    BulletURDFImporter u2b(m_data->m_guiHelper, NULL, globalScaling);
+#endif
 
 	bool forceFixedBase = false;
 	bool loadOk =u2b.loadSDF(fileName,forceFixedBase);
-	
+
 	if (loadOk)
 	{
 		processImportedObjects(fileName,bufferServerToClient,bufferSizeInBytes,useMultiBody,flags, u2b);
@@ -2669,7 +2683,12 @@ bool PhysicsServerCommandProcessor::loadUrdf(const char* fileName, const btVecto
 
 
 
+#ifndef NO_VISUALISER
     BulletURDFImporter u2b(m_data->m_guiHelper, &m_data->m_visualConverter, globalScaling);
+#else
+    BulletURDFImporter u2b(m_data->m_guiHelper, NULL, globalScaling);
+#endif
+    
 
     bool loadOk =  u2b.loadURDF(fileName, useFixedBase);
 
@@ -3393,6 +3412,7 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
 				};
 				case CMD_REQUEST_DEBUG_LINES:
 					{
+#ifndef NO_VISUALISER
 						BT_PROFILE("CMD_REQUEST_DEBUG_LINES");
 
 						int curFlags =m_data->m_remoteDebugDrawer->getDebugMode();
@@ -3458,12 +3478,13 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
                         serverStatusOut.m_sendDebugLinesArgs.m_startingLineIndex = startingLineIndex;
                         serverStatusOut.m_sendDebugLinesArgs.m_numRemainingDebugLines = m_data->m_remoteDebugDrawer->m_lines2.size()-(startingLineIndex+numLines);
 						hasStatus = true;
-
+#endif
 						break;
 					}
 
 				case CMD_REQUEST_CAMERA_IMAGE_DATA:
 				{
+                                  #ifndef NO_VISUALISER
 					BT_PROFILE("CMD_REQUEST_CAMERA_IMAGE_DATA");
 					int startPixelIndex = clientCmd.m_requestPixelDataArguments.m_startPixelIndex;
                     int width = clientCmd.m_requestPixelDataArguments.m_pixelWidth;
@@ -3652,7 +3673,7 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
 					serverStatusOut.m_sendPixelDataArguments.m_imageWidth = width;
 					serverStatusOut.m_sendPixelDataArguments.m_imageHeight= height;
 					hasStatus = true;
-
+#endif
 					break;
 				}
 
@@ -6316,6 +6337,7 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
 				case CMD_REQUEST_OPENGL_VISUALIZER_CAMERA:
 				{
 					BT_PROFILE("CMD_REQUEST_OPENGL_VISUALIZER_CAMERA");
+#ifndef NO_VISUALISER
                     SharedMemoryStatus& serverCmd = serverStatusOut;
 					bool result = this->m_data->m_guiHelper->getCameraInfo(
 						&serverCmd.m_visualizerCameraResultArgs.m_width,
@@ -6332,12 +6354,14 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
 						serverCmd.m_visualizerCameraResultArgs.m_target);
                     serverCmd.m_type = result ? CMD_REQUEST_OPENGL_VISUALIZER_CAMERA_COMPLETED: CMD_REQUEST_OPENGL_VISUALIZER_CAMERA_FAILED;
 					hasStatus = true;
+#endif
 					break;
 				}
 
                 case CMD_CONFIGURE_OPENGL_VISUALIZER:
                 {
 					BT_PROFILE("CMD_CONFIGURE_OPENGL_VISUALIZER");
+#ifndef NO_VISUALISER
                     SharedMemoryStatus& serverCmd = serverStatusOut;
                     serverCmd.m_type =CMD_CLIENT_COMMAND_COMPLETED;
                     
@@ -6356,6 +6380,7 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
                                                           clientCmd.m_configureOpenGLVisualizerArguments.m_cameraTargetPosition[1],
                                                           clientCmd.m_configureOpenGLVisualizerArguments.m_cameraTargetPosition[2]);
                     }
+#endif
                     break;
                 }
                                        
@@ -7033,7 +7058,9 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
 								
 								if (bodyHandle->m_multiBody->getBaseCollider())
 								{
+#ifndef NO_VISUALISER
 									m_data->m_visualConverter.removeVisualShape(bodyHandle->m_multiBody->getBaseCollider());
+#endif
 									m_data->m_dynamicsWorld->removeCollisionObject(bodyHandle->m_multiBody->getBaseCollider());
 									int graphicsIndex = bodyHandle->m_multiBody->getBaseCollider()->getUserIndex();
 									m_data->m_guiHelper->removeGraphicsInstance(graphicsIndex);
@@ -7043,7 +7070,9 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
 									
 									if (bodyHandle->m_multiBody->getLink(link).m_collider)
 									{
+#ifndef NO_VISUALISER
 										m_data->m_visualConverter.removeVisualShape(bodyHandle->m_multiBody->getLink(link).m_collider);
+#endif
 										m_data->m_dynamicsWorld->removeCollisionObject(bodyHandle->m_multiBody->getLink(link).m_collider);
 										int graphicsIndex = bodyHandle->m_multiBody->getLink(link).m_collider->getUserIndex();
 										m_data->m_guiHelper->removeGraphicsInstance(graphicsIndex);
@@ -7060,7 +7089,9 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
 							}
 							if (bodyHandle->m_rigidBody)
 							{
+#ifndef NO_VISUALISER
 								m_data->m_visualConverter.removeVisualShape(bodyHandle->m_rigidBody);
+#endif
 								serverCmd.m_removeObjectArgs.m_bodyUniqueIds[serverCmd.m_removeObjectArgs.m_numBodies++] = bodyUniqueId;
 								//todo: clear all other remaining data...
 								m_data->m_dynamicsWorld->removeRigidBody(bodyHandle->m_rigidBody);
@@ -7692,6 +7723,7 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
                 case CMD_REQUEST_VISUAL_SHAPE_INFO:
                 {
                     BT_PROFILE("CMD_REQUEST_VISUAL_SHAPE_INFO");
+#ifndef NO_VISUALISER
                     SharedMemoryStatus& serverCmd = serverStatusOut;
                     serverCmd.m_type = CMD_VISUAL_SHAPE_INFO_FAILED;
                     //retrieve the visual shape information for a specific body
@@ -7716,11 +7748,13 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
 						serverCmd.m_type = CMD_VISUAL_SHAPE_INFO_COMPLETED;
 					}
 					hasStatus = true;
+#endif
 					break;
                 }
                 case CMD_UPDATE_VISUAL_SHAPE:
                 {
 					BT_PROFILE("CMD_UPDATE_VISUAL_SHAPE");
+#ifndef NO_VISUALISER
                     SharedMemoryStatus& serverCmd = serverStatusOut;
                     serverCmd.m_type = CMD_VISUAL_SHAPE_UPDATE_FAILED;
                     InternalTextureHandle* texHandle = 0;
@@ -7733,7 +7767,9 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
 						{
 							if (texHandle)
 							{
+#ifndef NO_VISUALISER
 			                    m_data->m_visualConverter.activateShapeTexture(clientCmd.m_updateVisualShapeDataArguments.m_bodyUniqueId, clientCmd.m_updateVisualShapeDataArguments.m_jointIndex, clientCmd.m_updateVisualShapeDataArguments.m_shapeIndex, texHandle->m_tinyRendererTextureId);
+#endif
 							}
 						}
 					}                    
@@ -7808,7 +7844,7 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
 	
 					serverCmd.m_type = CMD_VISUAL_SHAPE_UPDATE_COMPLETED;
                     hasStatus = true;
-
+#endif
                     break;
                 }
 
@@ -7832,6 +7868,7 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
 				case CMD_LOAD_TEXTURE:
 				{
 					BT_PROFILE("CMD_LOAD_TEXTURE");
+#ifndef NO_VISUALISER
 					SharedMemoryStatus& serverCmd = serverStatusOut;
 					serverCmd.m_type = CMD_LOAD_TEXTURE_FAILED;
 
@@ -7878,7 +7915,7 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
 						serverCmd.m_type = CMD_LOAD_TEXTURE_FAILED;
 					}
 					hasStatus = true;
-
+#endif
 					break;
 				}
 
@@ -8597,7 +8634,9 @@ void PhysicsServerCommandProcessor::resetSimulation()
 	}
 	if (m_data)
 	{
+#ifndef NO_VISUALISER
 		m_data->m_visualConverter.resetAll();
+#endif
 	}
 
 	removePickingConstraint();

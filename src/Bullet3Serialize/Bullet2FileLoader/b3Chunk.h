@@ -16,9 +16,12 @@ subject to the following restrictions:
 #ifndef __BCHUNK_H__
 #define __BCHUNK_H__
 
-#if defined (_WIN32) && ! defined (__MINGW32__)
+#if defined(__CYGWIN__)
+asdasd
+#endif
+#if defined (_WIN32) && ! defined (__MINGW32__) && ! defined ( __CYGWIN__ )
 	#define b3Long64 __int64
-#elif defined (__MINGW32__)	
+#elif defined (__MINGW32__)	|| defined(__CYGWIN__)
 	#include <stdint.h>
 	#define b3Long64 int64_t
 #else

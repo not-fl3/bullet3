@@ -199,7 +199,7 @@ double b3Clock::getTimeInSeconds()
 
 void b3Clock::usleep(int microSeconds)
 {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(WIN32)
 	if (microSeconds==0)
 	{
 		Sleep(0);

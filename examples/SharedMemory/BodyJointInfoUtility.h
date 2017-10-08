@@ -11,7 +11,7 @@ namespace Bullet
 
 inline char* strDup(const char* const str)
 {
-#ifdef _WIN32
+#if defined (_WIN32) && ! defined (__CYGWIN__) && ! defined(__MINGW32__)
 	return _strdup(str);
 #else
 	return strdup(str);

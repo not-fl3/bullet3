@@ -2170,6 +2170,55 @@ B3_SHARED_API b3SharedMemoryCommandHandle b3CreateRigidBodyCommandInit(b3Physics
     return (b3SharedMemoryCommandHandle) command;
 }
 
+B3_SHARED_API b3SharedMemoryCommandHandle b3InitSetUserPointerCommand(b3PhysicsClientHandle physClient, int bodyUniqueId, void * pointer)
+{
+    PhysicsClient* cl = (PhysicsClient* ) physClient;
+    b3Assert(cl);
+    b3Assert(cl->canSubmitCommand());
+    struct SharedMemoryCommand* command = cl->getAvailableSharedMemoryCommand();
+    b3Assert(command);
+
+    command->m_type = CMD_SET_USER_POINTER;
+    command->m_updateFlags = 0;
+
+    command->m_setUserPointerArguments.m_bodyUniqueId = bodyUniqueId;
+
+    command->m_setUserPointerArguments.m_userPointer = pointer;
+
+    return (b3SharedMemoryCommandHandle) command;
+}
+
+B3_SHARED_API b3SharedMemoryCommandHandle b3InitGetUserPointerCommand(b3PhysicsClientHandle physClient, int bodyUniqueId)
+{
+    PhysicsClient* cl = (PhysicsClient* ) physClient;
+    b3Assert(cl);
+    b3Assert(cl->canSubmitCommand());
+    struct SharedMemoryCommand* command = cl->getAvailableSharedMemoryCommand();
+    b3Assert(command);
+
+    command->m_type = CMD_GET_USER_POINTER;
+    command->m_updateFlags = 0;
+
+    command->m_setUserPointerArguments.m_bodyUniqueId = bodyUniqueId;
+
+
+    return (b3SharedMemoryCommandHandle) command;
+}
+
+
+B3_SHARED_API int b3GetUserPointer(b3SharedMemoryStatusHandle statusHandle, void ** pointer) {
+  const SharedMemoryStatus* status = (const SharedMemoryStatus* ) statusHandle;
+  const SetUserPointerArgs &args = status->m_setUserPointerResultArgs;
+  btAssert(status->m_type == CMD_GET_USER_POINTER_COMPLETED);
+  if (status->m_type != CMD_GET_USER_POINTER_COMPLETED)
+    return false;
+
+  if (pointer) {
+    *pointer = args.m_userPointer;
+  }
+  return true;
+
+}
 B3_SHARED_API int b3InitChangeUserConstraintSetMaxForce(b3SharedMemoryCommandHandle commandHandle, double maxAppliedForce)
 {
 	struct SharedMemoryCommand* command = (struct SharedMemoryCommand*) commandHandle;

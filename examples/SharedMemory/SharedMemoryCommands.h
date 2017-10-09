@@ -960,6 +960,12 @@ struct CreateRigidBodyArgs
 	double m_orientation[4];
 };
 
+struct SetUserPointerArgs
+{
+  int m_bodyUniqueId;
+  void * m_userPointer;
+};
+
 struct SharedMemoryCommand
 {
 	int m_type;
@@ -1016,6 +1022,7 @@ struct SharedMemoryCommand
          struct SetAngularFactorArgs m_setAngularFactorArguments;
          struct CreateRigidBodyArgs m_createRigidBodyArguments;
          struct ApplyCentralImpulseArgs m_applyCentralImpulseArguments;
+         struct SetUserPointerArgs m_setUserPointerArguments;
 		struct b3CustomCommand m_customCommandArgs;
     };
 };
@@ -1088,6 +1095,7 @@ struct SharedMemoryStatus
 		struct SendMouseEvents m_sendMouseEvents;
 		struct b3LoadTextureResultArgs m_loadTextureResultArguments;
 		struct b3CustomCommandResultArgs m_customCommandResultArgs;
+                struct SetUserPointerArgs m_setUserPointerResultArgs;
 
 	};
 };

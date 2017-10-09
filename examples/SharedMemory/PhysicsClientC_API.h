@@ -470,13 +470,22 @@ B3_SHARED_API	void b3ApplyExternalForce(b3SharedMemoryCommandHandle commandHandl
 B3_SHARED_API	void b3ApplyExternalTorque(b3SharedMemoryCommandHandle commandHandle, int bodyUniqueId, int linkId, const double torque[/*3*/], int flags);
 
 /// Set angular force multiplier
-b3SharedMemoryCommandHandle b3InitSetAngularFactorCommand(b3PhysicsClientHandle physClient, int bodyUniqueId, const double factor[]);
+B3_SHARED_API b3SharedMemoryCommandHandle b3InitSetAngularFactorCommand(b3PhysicsClientHandle physClient, int bodyUniqueId, const double factor[]);
 
 /// Apply central impulse. Should work only with btRigidBodies
-b3SharedMemoryCommandHandle b3InitApplyCentralImpulseCommand(b3PhysicsClientHandle physClient, int bodyUniqueId, const double impulse[]);
+B3_SHARED_API b3SharedMemoryCommandHandle b3InitApplyCentralImpulseCommand(b3PhysicsClientHandle physClient, int bodyUniqueId, const double impulse[]);
 
-/// Set rigid body from shape
-b3SharedMemoryCommandHandle b3CreateRigidBodyCommandInit(b3PhysicsClientHandle physClient, int shapeUniqueId, int is_dynamic, double mass, const double position[], const double orientation[]);
+/// Create rigid body from shape
+B3_SHARED_API b3SharedMemoryCommandHandle b3CreateRigidBodyCommandInit(b3PhysicsClientHandle physClient, int shapeUniqueId, int is_dynamic, double mass, const double position[], const double orientation[]);
+
+/// Init command Set user poiner
+B3_SHARED_API b3SharedMemoryCommandHandle b3InitSetUserPointerCommand(b3PhysicsClientHandle physClient, int bodyUniqueId, void * pointer);
+
+/// Init command to get user poiner
+B3_SHARED_API b3SharedMemoryCommandHandle b3InitGetUserPointerCommand(b3PhysicsClientHandle physClient, int bodyUniqueId);
+
+/// Actually get user pointer from command output
+B3_SHARED_API int b3GetUserPointer(b3SharedMemoryStatusHandle statusHandle, void ** pointer);
 
 ///experiments of robots interacting with non-rigid objects (such as btSoftBody)
 B3_SHARED_API	b3SharedMemoryCommandHandle	b3LoadBunnyCommandInit(b3PhysicsClientHandle physClient);

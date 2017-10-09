@@ -75,6 +75,9 @@ enum EnumSharedMemoryClientCommand
     CMD_CUSTOM_COMMAND,
     CMD_SET_ANGULAR_FACTOR,
     CMD_APPLY_CENTRAL_IMPULSE,
+    CMD_SET_USER_POINTER,
+    CMD_GET_USER_POINTER,
+
     //don't go beyond this command!
     CMD_MAX_CLIENT_COMMANDS,
     
@@ -173,6 +176,8 @@ enum EnumSharedMemoryServerStatus
 		CMD_CUSTOM_COMMAND_COMPLETED,
 		CMD_CUSTOM_COMMAND_FAILED,
 
+        CMD_GET_USER_POINTER_COMPLETED,
+        CMD_GET_USER_POINTER_FAILED,
         //don't go beyond 'CMD_MAX_SERVER_COMMANDS!
         CMD_MAX_SERVER_COMMANDS
 };

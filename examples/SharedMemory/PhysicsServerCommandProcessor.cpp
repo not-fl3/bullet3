@@ -7008,6 +7008,58 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
                       hasStatus = true;
                       break;
                     }
+                    case CMD_SET_USER_POINTER:
+                      {
+                        BT_PROFILE("CMD_SET_USER_POINTER");
+
+                        InternalBodyHandle* bodyHandle = m_data->m_bodyHandles.getHandle(clientCmd.m_setUserPointerArguments.m_bodyUniqueId);
+                        if (bodyHandle && bodyHandle->m_rigidBody)
+                          {
+                            btRigidBody* mb = bodyHandle->m_rigidBody;
+
+                            mb->setUserPointer(clientCmd.m_setUserPointerArguments.m_userPointer);
+                          }
+
+                        if (bodyHandle && bodyHandle->m_multiBody)
+                          {
+                            btMultiBody* mb = bodyHandle->m_multiBody;
+
+                            mb->setUserPointer(clientCmd.m_setUserPointerArguments.m_userPointer);
+                          }
+
+                        SharedMemoryStatus& serverCmd =serverStatusOut;
+                        serverCmd.m_type = CMD_CLIENT_COMMAND_COMPLETED;
+                        hasStatus = true;
+                        break;
+                      }
+
+                      case CMD_GET_USER_POINTER:
+                        {
+                          BT_PROFILE("CMD_GET_USER_POINTER");
+
+                          SharedMemoryStatus& serverCmd = serverStatusOut;
+
+                          InternalBodyHandle* bodyHandle = m_data->m_bodyHandles.getHandle(clientCmd.m_setUserPointerArguments.m_bodyUniqueId);
+                          void * pointer;
+                          if (bodyHandle && bodyHandle->m_rigidBody)
+                            {
+                              btRigidBody* mb = bodyHandle->m_rigidBody;
+
+                              serverCmd.m_setUserPointerResultArgs.m_userPointer = mb->getUserPointer();
+                            }
+
+                          if (bodyHandle && bodyHandle->m_multiBody)
+                            {
+                              btMultiBody* mb = bodyHandle->m_multiBody;
+
+                              serverCmd.m_setUserPointerResultArgs.m_userPointer = mb->getUserPointer();
+                            }
+
+                          serverCmd.m_type = CMD_GET_USER_POINTER_COMPLETED;
+                          hasStatus = true;
+                          break;
+                        }
+
 
 
 				case CMD_REMOVE_BODY:

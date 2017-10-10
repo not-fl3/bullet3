@@ -966,6 +966,12 @@ struct SetUserPointerArgs
   void * m_userPointer;
 };
 
+struct SetBodyGravityArgs
+{
+  int m_bodyUniqueId;
+  double m_gravity[3];
+};
+
 struct SharedMemoryCommand
 {
 	int m_type;
@@ -1023,6 +1029,7 @@ struct SharedMemoryCommand
          struct CreateRigidBodyArgs m_createRigidBodyArguments;
          struct ApplyCentralImpulseArgs m_applyCentralImpulseArguments;
          struct SetUserPointerArgs m_setUserPointerArguments;
+         struct SetBodyGravityArgs m_setBodyGravityArguments;
 		struct b3CustomCommand m_customCommandArgs;
     };
 };

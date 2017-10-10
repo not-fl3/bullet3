@@ -2219,6 +2219,25 @@ B3_SHARED_API int b3GetUserPointer(b3SharedMemoryStatusHandle statusHandle, void
   return true;
 
 }
+
+B3_SHARED_API b3SharedMemoryCommandHandle b3InitSetBodyGravityCommand(b3PhysicsClientHandle physClient, int bodyUniqueId, const double gravity[]) {
+  PhysicsClient* cl = (PhysicsClient* ) physClient;
+  b3Assert(cl);
+  b3Assert(cl->canSubmitCommand());
+  struct SharedMemoryCommand* command = cl->getAvailableSharedMemoryCommand();
+  b3Assert(command);
+
+  command->m_type = CMD_SET_BODY_GRAVITY;
+  command->m_updateFlags = 0;
+
+  command->m_setBodyGravityArguments.m_bodyUniqueId = bodyUniqueId;
+  command->m_setBodyGravityArguments.m_gravity[0] = gravity[0];
+  command->m_setBodyGravityArguments.m_gravity[1] = gravity[1];
+  command->m_setBodyGravityArguments.m_gravity[2] = gravity[2];
+
+  return (b3SharedMemoryCommandHandle) command;
+}
+
 B3_SHARED_API int b3InitChangeUserConstraintSetMaxForce(b3SharedMemoryCommandHandle commandHandle, double maxAppliedForce)
 {
 	struct SharedMemoryCommand* command = (struct SharedMemoryCommand*) commandHandle;

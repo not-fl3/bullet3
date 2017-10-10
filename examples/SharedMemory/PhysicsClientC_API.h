@@ -487,6 +487,9 @@ B3_SHARED_API b3SharedMemoryCommandHandle b3InitGetUserPointerCommand(b3PhysicsC
 /// Actually get user pointer from command output
 B3_SHARED_API int b3GetUserPointer(b3SharedMemoryStatusHandle statusHandle, void ** pointer);
 
+/// Set gravity to this specific body
+B3_SHARED_API b3SharedMemoryCommandHandle b3InitSetBodyGravityCommand(b3PhysicsClientHandle physClient, int bodyUniqueId, const double gravity[]);
+
 ///experiments of robots interacting with non-rigid objects (such as btSoftBody)
 B3_SHARED_API	b3SharedMemoryCommandHandle	b3LoadBunnyCommandInit(b3PhysicsClientHandle physClient);
 B3_SHARED_API	int b3LoadBunnySetScale(b3SharedMemoryCommandHandle commandHandle, double scale);

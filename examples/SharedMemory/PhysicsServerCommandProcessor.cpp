@@ -7060,6 +7060,27 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
                           break;
                         }
 
+                    case CMD_SET_BODY_GRAVITY:
+                      {
+                        BT_PROFILE("CMD_SET_BODY_GRAVITY");
+
+                        InternalBodyHandle* bodyHandle = m_data->m_bodyHandles.getHandle(clientCmd.m_setUserPointerArguments.m_bodyUniqueId);
+                        btVector3 gravity(clientCmd.m_setBodyGravityArguments.m_gravity[0],
+                                          clientCmd.m_setBodyGravityArguments.m_gravity[1],
+                                          clientCmd.m_setBodyGravityArguments.m_gravity[2]);
+
+                        if (bodyHandle && bodyHandle->m_rigidBody)
+                          {
+                            btRigidBody* mb = bodyHandle->m_rigidBody;
+
+                            mb->setGravity(gravity);
+                          }
+
+                        SharedMemoryStatus& serverCmd =serverStatusOut;
+                        serverCmd.m_type = CMD_CLIENT_COMMAND_COMPLETED;
+                        hasStatus = true;
+                        break;
+                      }
 
 
 				case CMD_REMOVE_BODY:

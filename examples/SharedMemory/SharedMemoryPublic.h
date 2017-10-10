@@ -77,6 +77,7 @@ enum EnumSharedMemoryClientCommand
     CMD_APPLY_CENTRAL_IMPULSE,
     CMD_SET_USER_POINTER,
     CMD_GET_USER_POINTER,
+    CMD_SET_BODY_GRAVITY,
 
     //don't go beyond this command!
     CMD_MAX_CLIENT_COMMANDS,

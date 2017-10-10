@@ -2416,14 +2416,14 @@ void PhysicsServerExample::drawUserDebugLines()
 			}
 
 			float colorRGBA[4] = {
-				m_multiThreadedHelper->m_userDebugText[i].m_textColorRGB[0],
-				m_multiThreadedHelper->m_userDebugText[i].m_textColorRGB[1],
-				m_multiThreadedHelper->m_userDebugText[i].m_textColorRGB[2],
+                                (float)m_multiThreadedHelper->m_userDebugText[i].m_textColorRGB[0],
+				(float)m_multiThreadedHelper->m_userDebugText[i].m_textColorRGB[1],
+				(float)m_multiThreadedHelper->m_userDebugText[i].m_textColorRGB[2],
 				1.};
 
-			float pos[3] = {m_multiThreadedHelper->m_userDebugText[i].m_textPositionXYZ1[0],
-			m_multiThreadedHelper->m_userDebugText[i].m_textPositionXYZ1[1],
-			m_multiThreadedHelper->m_userDebugText[i].m_textPositionXYZ1[2]};
+			float pos[3] = {(float)m_multiThreadedHelper->m_userDebugText[i].m_textPositionXYZ1[0],
+                                        (float)m_multiThreadedHelper->m_userDebugText[i].m_textPositionXYZ1[1],
+                                        (float)m_multiThreadedHelper->m_userDebugText[i].m_textPositionXYZ1[2]};
 
 			int graphicsIndex = m_multiThreadedHelper->m_userDebugText[i].m_trackingVisualShapeIndex;
 			if (graphicsIndex>=0)

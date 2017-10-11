@@ -262,7 +262,7 @@ struct RequestRaycastIntersections
 struct SendRaycastHits
 {
 	int m_numRaycastHits;
-	b3RayHitInfo m_rayHits[MAX_RAY_INTERSECTION_BATCH_SIZE];
+	b3RayHitsInfo m_rayHits[MAX_RAY_INTERSECTION_BATCH_SIZE];
 };
 
 struct RequestContactDataArgs

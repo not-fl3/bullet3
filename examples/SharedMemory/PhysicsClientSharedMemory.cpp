@@ -48,7 +48,7 @@ struct PhysicsClientSharedMemoryInternalData {
 	btAlignedObjectArray<b3KeyboardEvent> m_cachedKeyboardEvents;
 	btAlignedObjectArray<b3MouseEvent> m_cachedMouseEvents;
 	
-	btAlignedObjectArray<b3RayHitInfo>	m_raycastHits;
+	btAlignedObjectArray<b3RayHitsInfo>	m_raycastHits;
 
     btAlignedObjectArray<int> m_bodyIdsRequestInfo;
 	btAlignedObjectArray<int> m_constraintIdsRequestInfo;

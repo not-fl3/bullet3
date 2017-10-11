@@ -484,10 +484,15 @@ struct b3RayHitInfo
 	double m_hitNormalWorld[3];
 };
 
+struct b3RayHitsInfo {
+	int m_numHits;
+	b3RayHitInfo* hits;
+};
+
 struct b3RaycastInformation
 {
 	int m_numRayHits;
-	struct b3RayHitInfo* m_rayHits;
+	struct b3RayHitsInfo* m_rayHits;
 };
 
 

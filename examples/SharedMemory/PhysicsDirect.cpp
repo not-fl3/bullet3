@@ -56,7 +56,7 @@ struct PhysicsDirectInternalData
 	btAlignedObjectArray<b3KeyboardEvent> m_cachedKeyboardEvents;
 	btAlignedObjectArray<b3MouseEvent> m_cachedMouseEvents;
 
-	btAlignedObjectArray<b3RayHitInfo>	m_raycastHits;
+	btAlignedObjectArray<b3RayHitsInfo>	m_raycastHits;
 
 	PhysicsCommandProcessorInterface* m_commandProcessor;
 	bool m_ownsCommandProcessor;
@@ -665,6 +665,11 @@ void PhysicsDirect::postProcessStatus(const struct SharedMemoryStatus& serverCmd
 		{
 			b3Printf("Raycast completed");
 		}
+                for (int i = 0; i < m_data->m_raycastHits.size(); i++) {
+                  if (m_data->m_raycastHits[i].hits) {
+                    delete m_data->m_raycastHits[i].hits;
+                  }
+                }
 		m_data->m_raycastHits.clear();
 		for (int i=0;i<serverCmd.m_raycastHits.m_numRaycastHits;i++)
 		{
@@ -949,6 +954,18 @@ void PhysicsDirect::postProcessStatus(const struct SharedMemoryStatus& serverCmd
 		b3Warning("custom plugin command failed");
 		break;
 	}
+
+        case CMD_GET_USER_POINTER_COMPLETED:
+          {
+            break;
+          }
+
+        case CMD_GET_USER_POINTER_FAILED:
+          {
+            b3Warning("get user pointer command failed");
+            break;
+          }
+
 
 	default:
 	{

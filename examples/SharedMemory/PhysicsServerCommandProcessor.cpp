@@ -3347,25 +3347,33 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
 							clientCmd.m_requestRaycastIntersections.m_rayToPositions[ray][1],
 							clientCmd.m_requestRaycastIntersections.m_rayToPositions[ray][2]);
 
-						btCollisionWorld::ClosestRayResultCallback rayResultCallback(rayFromWorld,rayToWorld);
+						btCollisionWorld::AllHitsRayResultCallback rayResultCallback(rayFromWorld,rayToWorld);
 						m_data->m_dynamicsWorld->rayTest(rayFromWorld,rayToWorld,rayResultCallback);
 						int rayHits = serverStatusOut.m_raycastHits.m_numRaycastHits;
 
+                                                if (serverStatusOut.m_raycastHits.m_rayHits[rayHits].hits) {
+                                                  delete serverStatusOut.m_raycastHits.m_rayHits[rayHits].hits;
+                                                }
+                                                serverStatusOut.m_raycastHits.m_rayHits[rayHits].m_numHits = rayResultCallback.m_collisionObjects.size();
+                                                serverStatusOut.m_raycastHits.m_rayHits[rayHits].hits = new b3RayHitInfo[rayResultCallback.m_collisionObjects.size()];
+
 						if (rayResultCallback.hasHit())
 						{
-							serverStatusOut.m_raycastHits.m_rayHits[rayHits].m_hitFraction 
-								= rayResultCallback.m_closestHitFraction;
+                                                  for (int collision = 0; collision < rayResultCallback.m_collisionObjects.size(); collision++) {
+                                                    b3RayHitInfo hitInfo;
+
+                                                    hitInfo.m_hitFraction  = rayResultCallback.m_closestHitFraction;
 
 							int objectUniqueId = -1;
 							int linkIndex = -1;
 
-							const btRigidBody* body = btRigidBody::upcast(rayResultCallback.m_collisionObject);
+							const btRigidBody* body = btRigidBody::upcast(rayResultCallback.m_collisionObjects[collision]);
 							if (body)
 							{
-								objectUniqueId = rayResultCallback.m_collisionObject->getUserIndex2();
+								objectUniqueId = rayResultCallback.m_collisionObjects[collision]->getUserIndex2();
 							} else
 							{
-								const btMultiBodyLinkCollider* mblB = btMultiBodyLinkCollider::upcast(rayResultCallback.m_collisionObject);
+								const btMultiBodyLinkCollider* mblB = btMultiBodyLinkCollider::upcast(rayResultCallback.m_collisionObjects[collision]);
 								if (mblB && mblB->m_multiBody)
 								{
 									linkIndex = mblB->m_link;
@@ -3373,36 +3381,27 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
 								}
 							}
 
-							serverStatusOut.m_raycastHits.m_rayHits[rayHits].m_hitObjectUniqueId 
+							hitInfo.m_hitObjectUniqueId 
 								= objectUniqueId;
-							serverStatusOut.m_raycastHits.m_rayHits[rayHits].m_hitObjectLinkIndex
+							hitInfo.m_hitObjectLinkIndex
 								= linkIndex;
 
-							serverStatusOut.m_raycastHits.m_rayHits[rayHits].m_hitPositionWorld[0] 
-								= rayResultCallback.m_hitPointWorld[0];
-							serverStatusOut.m_raycastHits.m_rayHits[rayHits].m_hitPositionWorld[1] 
-								= rayResultCallback.m_hitPointWorld[1];
-							serverStatusOut.m_raycastHits.m_rayHits[rayHits].m_hitPositionWorld[2] 
-								= rayResultCallback.m_hitPointWorld[2];
+							hitInfo.m_hitPositionWorld[0] 
+								= rayResultCallback.m_hitPointWorld[collision][0];
+							hitInfo.m_hitPositionWorld[1] 
+								= rayResultCallback.m_hitPointWorld[collision][1];
+							hitInfo.m_hitPositionWorld[2] 
+								= rayResultCallback.m_hitPointWorld[collision][2];
 						
-							serverStatusOut.m_raycastHits.m_rayHits[rayHits].m_hitNormalWorld[0] 
-								= rayResultCallback.m_hitNormalWorld[0]; 
-							serverStatusOut.m_raycastHits.m_rayHits[rayHits].m_hitNormalWorld[1] 
-								= rayResultCallback.m_hitNormalWorld[1]; 
-							serverStatusOut.m_raycastHits.m_rayHits[rayHits].m_hitNormalWorld[2] 
-								= rayResultCallback.m_hitNormalWorld[2]; 
+							hitInfo.m_hitNormalWorld[0] 
+								= rayResultCallback.m_hitNormalWorld[collision][0]; 
+							hitInfo.m_hitNormalWorld[1] 
+								= rayResultCallback.m_hitNormalWorld[collision][1]; 
+							hitInfo.m_hitNormalWorld[2] 
+								= rayResultCallback.m_hitNormalWorld[collision][2];
 
-						} else
-						{
-							serverStatusOut.m_raycastHits.m_rayHits[rayHits].m_hitFraction = 1;
-							serverStatusOut.m_raycastHits.m_rayHits[serverStatusOut.m_raycastHits.m_numRaycastHits].m_hitObjectUniqueId = -1;
-							serverStatusOut.m_raycastHits.m_rayHits[serverStatusOut.m_raycastHits.m_numRaycastHits].m_hitObjectLinkIndex = -1;
-							serverStatusOut.m_raycastHits.m_rayHits[rayHits].m_hitPositionWorld[0] = 0;
-							serverStatusOut.m_raycastHits.m_rayHits[rayHits].m_hitPositionWorld[1] = 0;
-							serverStatusOut.m_raycastHits.m_rayHits[rayHits].m_hitPositionWorld[2] = 0;
-							serverStatusOut.m_raycastHits.m_rayHits[rayHits].m_hitNormalWorld[0] = 0;
-							serverStatusOut.m_raycastHits.m_rayHits[rayHits].m_hitNormalWorld[1] = 0;
-							serverStatusOut.m_raycastHits.m_rayHits[rayHits].m_hitNormalWorld[2] = 0;
+                                                        serverStatusOut.m_raycastHits.m_rayHits[rayHits].hits[collision] = hitInfo;
+                                                  }
 						}
 						serverStatusOut.m_raycastHits.m_numRaycastHits++;
 					}
@@ -7038,7 +7037,6 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
                           BT_PROFILE("CMD_GET_USER_POINTER");
 
                           SharedMemoryStatus& serverCmd = serverStatusOut;
-
                           InternalBodyHandle* bodyHandle = m_data->m_bodyHandles.getHandle(clientCmd.m_setUserPointerArguments.m_bodyUniqueId);
                           void * pointer;
                           if (bodyHandle && bodyHandle->m_rigidBody)

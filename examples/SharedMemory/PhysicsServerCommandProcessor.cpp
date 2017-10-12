@@ -3362,7 +3362,7 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
                                                   for (int collision = 0; collision < rayResultCallback.m_collisionObjects.size(); collision++) {
                                                     b3RayHitInfo hitInfo;
 
-                                                    hitInfo.m_hitFraction  = rayResultCallback.m_closestHitFraction;
+                                                    hitInfo.m_hitFraction  = rayResultCallback.m_hitFractions[collision];
 
 							int objectUniqueId = -1;
 							int linkIndex = -1;

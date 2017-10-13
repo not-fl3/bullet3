@@ -2434,7 +2434,7 @@ B3_SHARED_API void b3GetRaycastInformation(b3PhysicsClientHandle physClient, str
 	PhysicsClient* cl = (PhysicsClient* ) physClient;
 	if (cl)
 	{
-		cl->getCachedRaycastHits(raycastInfo);
+          cl->getCachedRaycastHits(raycastInfo);
 	}
 }
 

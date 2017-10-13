@@ -484,9 +484,11 @@ struct b3RayHitInfo
 	double m_hitNormalWorld[3];
 };
 
+#define MAX_HITS_AMOUNT 20
+
 struct b3RayHitsInfo {
 	int m_numHits;
-	b3RayHitInfo* hits;
+	struct b3RayHitInfo hits[MAX_HITS_AMOUNT];
 };
 
 struct b3RaycastInformation

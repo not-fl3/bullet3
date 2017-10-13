@@ -665,11 +665,6 @@ void PhysicsDirect::postProcessStatus(const struct SharedMemoryStatus& serverCmd
 		{
 			b3Printf("Raycast completed");
 		}
-                for (int i = 0; i < m_data->m_raycastHits.size(); i++) {
-                  if (m_data->m_raycastHits[i].hits) {
-                    delete m_data->m_raycastHits[i].hits;
-                  }
-                }
 		m_data->m_raycastHits.clear();
 		for (int i=0;i<serverCmd.m_raycastHits.m_numRaycastHits;i++)
 		{

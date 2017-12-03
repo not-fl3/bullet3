@@ -52,7 +52,7 @@
 
 #endif //_XBOX
 
-#include <time.h>
+//#include <time.h>
 
 
 #else //_WIN32
@@ -120,7 +120,7 @@ void btClock::reset()
 {
 #ifdef BT_USE_WINDOWS_TIMERS
 	QueryPerformanceCounter(&m_data->mStartTime);
-	m_data->mStartTick = GetTickCount64();
+	//m_data->mStartTick = GetTickCount64();
 #else
 #ifdef __CELLOS_LV2__
 
